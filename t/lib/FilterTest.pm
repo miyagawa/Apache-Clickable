@@ -16,12 +16,18 @@ use Apache::FakeRequest;
 
 sub filters {
     my($file, $class, $config) = @_;
-    tie *STDOUT, 'Tie::STDOUT', \my $output;
     my $r = Apache::FakeRequest->new(
 	content_type => 'text/html',
 	is_main => 1,
 	filename => $file,
     );
+
+    my $out;
+    local $^W;
+    local *Apache::FakeRequest::print = sub {
+	shift;
+	$out .= join '', @_;
+    };
 
     if (ref($config) eq 'HASH') {
 	no strict 'refs';
@@ -30,23 +36,11 @@ sub filters {
 	    my($r, $cfgkey) = @_;
 	    return $config->{$cfgkey};
 	};
-    }	
+    }
 
     no strict 'refs';
     &{$class. "::handler"}($r);
-    return $output;
-}
-
-package Tie::STDOUT;
-
-sub TIEHANDLE {
-    my($class, $ref) = @_;
-    bless $ref, $class;
-}
-
-sub PRINT {
-    my $self = shift;
-    $$self .= join '', @_;
+    return $out;
 }
 
 

@@ -2,7 +2,7 @@ package Apache::Clickable;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = '0.01';
+$VERSION = 0.02;
 
 use Apache::Constants qw(:common);
 use Apache::File;
@@ -24,9 +24,9 @@ sub handler {
     } else {
 	$fh = Apache::File->new($r->filename);
     }
-   
+
     return DECLINED unless $fh;
-    
+
     $r->send_http_header;
 
     local $/;			# slurp
@@ -53,13 +53,13 @@ use URI::Find;
 
 sub new {
     my($class, %args) = @_;
-    
+
     my $self = $class->SUPER::new;
     $self->{apr} = $args{apr};
     $self->{currently_in_a} = 0;
     return $self;
 }
- 
+
 sub comment {
     my($self, $comment) = @_;
     $self->{output} .= "<!--$comment-->";
@@ -111,7 +111,7 @@ sub replace_sub {
 					 ($target ? qq( target="$target") : ''),
 					 $orig_uri);
 		      });
-    
+
 	    # replace Emails
 	    unless (uc($self->{apr}->dir_config('ClickableEmail')) eq 'OFF') {
 		find_emails($input, sub {
@@ -120,14 +120,12 @@ sub replace_sub {
 					       $orig_email, $orig_email);
 			    });
 	    }
-    
+
 	    return $input;
 	};
     }
     return $sub;
 }
-
-   
 
 1;
 __END__

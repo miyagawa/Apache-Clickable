@@ -1,6 +1,7 @@
 Changes
 MANIFEST
 Makefile.PL
+README
 lib/Apache/Clickable.pm
 t/00_load.t
 t/01_simple.t
